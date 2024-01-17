@@ -54,11 +54,11 @@ def deal_cards(deck):
     return (dealer, other)
 
 
-def remove_pairs(l):
+def remove_pairs(cards):
     '''
      (list of str)->list of str
 
-     Returns a copy of list l where all the pairs from l are removed AND
+     Returns a copy of list cards where all the pairs from cards are removed AND
      the elements of the new list shuffled
 
      Precondition: elements of l are cards represented as strings described above
@@ -73,30 +73,28 @@ def remove_pairs(l):
      ['2♣', '5♢', '6♣', '9♣', 'A♢']
     '''
     no_pairs=[]
-    l.sort()
-    if len(l)==1:
-        return l
-    for i in range(len(l)-1):
-        if l[i][0]==l[i-1][0] and l[i][0]==l[i+1][0] and len(l)!=2:
-            no_pairs.append(l[i])
-        elif l[i][0]!=l[i-1][0] and l[i][0]!=l[i+1][0]:
-            no_pairs.append(l[i])
-    if l[-1][0]!=l[-2][0]:
-        no_pairs.append(l[-1])
-    j=0
+    cards.sort()
+    if len(cards)==1:
+        return cards
+    for card_index in range(len(cards)-1):
+        if cards[card_index][0]==cards[card_index-1][0] and cards[card_index][0]==cards[card_index+1][0] and len(cards)!=2:
+            no_pairs.append(cards[card_index])
+        elif cards[card_index][0]!=cards[card_index-1][0] and cards[card_index][0]!=cards[card_index+1][0]:
+            no_pairs.append(cards[card_index])
+    if cards[-1][0]!=cards[-2][0]:
+        no_pairs.append(cards[-1])
     char=0
-    for s in range(len(no_pairs)-1):
-        if char==len(no_pairs) or j==len(no_pairs)-1:
+    for i in range(len(no_pairs)-1):
+        if char==len(no_pairs) or char==len(no_pairs)-1:
             return no_pairs
-        elif no_pairs[char][0]==no_pairs[j+1][0] :
-            no_pairs.pop(j)
-            no_pairs.pop(j)
+        elif no_pairs[char][0]==no_pairs[char+1][0] :
+            no_pairs.pop(char)
+            no_pairs.pop(char)
             char-=1
-            j-=1
-        j+=1
         char+=1
     random.shuffle(no_pairs)
     return no_pairs
+
 
 
 def print_deck(deck):
@@ -141,16 +139,18 @@ def play_game():
     wait_for_player()
      
     while len(human)>0 and len(dealer)>0: 
+        dealer=remove_pairs(dealer)
+        human=remove_pairs(human)
         print("**********************************************************************")
         if len(dealer)==0:
             print("Ups. You do not have any more cards\nYou lost! I, Robot, win")
+            break
         elif len(human)==0:
             print("Ups.You do not have any more cards\nCongratulations!You, Human, win")
+            break
         else:
             print("Your turn.")
             print("\nYour current deck of cards is: ")
-            dealer=remove_pairs(dealer)
-            human=remove_pairs(human)
             print_deck(human)
             print("I have "+str(len(dealer))+ " cards. If 1 stands for my first card and "+ str(len(dealer))+ " for my last card, which of my cards would you like? ")
             ans=get_valid_input(len(dealer))
@@ -159,7 +159,7 @@ def play_game():
             elif ans==2:
                 print("You asked for my "+str(ans)+"nd card.")
             elif ans==3:
-                print("You asked for my "+str(ans)+"rd card.")  
+                print("You asked for my "+str(ans)+"rd card.")
             else:
                 print("You asked for my "+str(ans)+"th card.")
             print("Here it is. It is "+str(dealer[ans-1]))
@@ -176,8 +176,10 @@ def play_game():
         print("**********************************************************************")
         if len(dealer)==0:
             print("Ups. You do not have any more cards\nYou lost! I, Robot, win")
+            break
         elif len(human)==0:
             print("Ups.You do not have any more cards\nCongratulations!You, Human, win")
+            break
         else:
             print("My turn\n")
             card=random.randint(1,(len(human)))
